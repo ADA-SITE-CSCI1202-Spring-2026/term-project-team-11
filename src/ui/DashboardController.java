@@ -1,8 +1,15 @@
 package ui;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+
 public class DashboardController {
 
-    public void sayHello() {
-        System.out.println("Hello, World!");
+    @FXML
+    private Label testLabel;
+
+    @FXML
+    public void initialize() {
+        testLabel.setText("JavaFX is working");
     }
 }
