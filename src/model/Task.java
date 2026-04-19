@@ -1,15 +1,18 @@
 package model;
 
+import java.util.Map;
 
 public abstract class Task {
     private String taskName;
-    private String description;
-    private int resourceCost;
+    private String desc;
+    private Map<ResourceType, Integer> resCost;
+    private int creditRew;
 
-    public Task(String taskName, String description, int resourceCost) {
+    public Task(String taskName, String desc, Map<ResourceType, Integer> resCost, int creditRew) {
         this.taskName = taskName;
-        this.description = description;
-        this.resourceCost = resourceCost;
+        this.desc = desc;
+        this.resCost = resCost;
+        this.creditRew = creditRew;
     }
 
     public String getTaskName() {
@@ -17,17 +20,22 @@ public abstract class Task {
     }
 
     public String getDescription() {
-        return description;
+        return desc;
     }
 
-    public int getResourceCost() {
-        return resourceCost;
+    public Map<ResourceType, Integer> getResourceCosts() {
+        return resCost;
     }
 
-       public abstract void execute();
+    public int getCreditReward() {
+        return creditRew;
+    }
+
+    public abstract void execute();
 
     @Override
     public String toString() {
-        return String.format("[%s] %s (Cost: %d)", taskName, description, resourceCost);
+        return String.format("[%s] %s | Costs: %s | Reward: %d Credits", 
+                             taskName, desc, resCost, creditRew);
     }
 }
