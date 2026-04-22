@@ -1,4 +1,4 @@
-package src.model;
+package model;
 public enum ResourceType {
     OXYGEN("Oxygen"),
     SPARE_PARTS("Spare Parts"),
