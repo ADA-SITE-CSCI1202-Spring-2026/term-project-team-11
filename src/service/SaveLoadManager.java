@@ -1,13 +1,54 @@
-package service; 
-/*it should be located in service folder, but just writing it here for now
- */                 
-import java.util.Queue;
-import java.io.*;
+package service;
 
-/**
- * SaveLoadManager handles saving and loading
- * the base and task queue using serialization.
- */
+import model.BaseState;
+import model.ResourceType;
+import java.io.*;
+import java.util.Scanner;
+
 public class SaveLoadManager {
+    private static final String FILE_NAME = "init.txt";
+
     
+     //Writes the current BaseState to init.txt
+    public void saveProgress(BaseState state) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_NAME))) {
+            // Writing exactly in the format Movlan expects
+            writer.println("Credits:" + state.getCredits());
+            writer.println("Oxygen:" + state.getResource(ResourceType.OXYGEN));
+            writer.println("Spare Parts:" + state.getResource(ResourceType.SPARE_PARTS));
+            writer.println("Rations:" + state.getResource(ResourceType.RATIONS));
+            writer.println("Power:" + state.getResource(ResourceType.POWER));
+            
+            System.out.println("LOG: Persistence successful. Data written to init.txt");
+        } catch (IOException e) {
+            System.err.println("CRITICAL ERROR: Could not write to save file.");
+        }
+    }
+
+    /**
+     * Reads the init.txt file. 
+     * Note: You will need Nilufar to add "setter" methods to BaseState 
+     * to actually update the values after reading them.
+     */
+    public void loadProgress() {
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            System.out.println("LOG: No init.txt found. Using default values.");
+            return;
+        }
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (line.contains(":")) {
+                    String[] parts = line.split(":");
+                    String label = parts[0];
+                    String value = parts[1];
+                    System.out.println("Restoring " + label + " to " + value);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 }

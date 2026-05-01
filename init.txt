@@ -1,1 +1,4 @@
-"Team 11 Project Started" 
+Oxygen:85
+Spare Parts:12
+Rations:40
+Credits:500
