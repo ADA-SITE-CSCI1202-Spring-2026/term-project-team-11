@@ -1,18 +1,15 @@
 package service;
 
-import model.BaseState;
-import model.ResourceType;
 import java.io.*;
 import java.util.Scanner;
+import model.BaseState;
+import model.ResourceType;
 
 public class SaveLoadManager {
     private static final String FILE_NAME = "init.txt";
 
-    
-     //Writes the current BaseState to init.txt
     public void saveProgress(BaseState state) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_NAME))) {
-            // Writing exactly in the format Movlan expects
             writer.println("Credits:" + state.getCredits());
             writer.println("Oxygen:" + state.getResource(ResourceType.OXYGEN));
             writer.println("Spare Parts:" + state.getResource(ResourceType.SPARE_PARTS));
@@ -25,11 +22,6 @@ public class SaveLoadManager {
         }
     }
 
-    /**
-     * Reads the init.txt file. 
-     * Note: You will need Nilufar to add "setter" methods to BaseState 
-     * to actually update the values after reading them.
-     */
     public void loadProgress() {
         File file = new File(FILE_NAME);
         if (!file.exists()) {
