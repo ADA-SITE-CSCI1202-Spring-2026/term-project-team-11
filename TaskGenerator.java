@@ -1,33 +1,61 @@
 package service;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.Consumer;
-import model.*;
 
+/**
+ * Responsible for the Station Clock and random task generation.
+ * Part of the feature/simulation-engine branch.
+ */
 public class TaskGenerator {
-    private Queue<Task> queue;
-    private Timer timer;
-    private Random rand = new Random();
-    private Consumer<String> logOutput; // This will send text to the GUI
+    private Queue<ColonyTask> taskQueue;
+    private Timeline timeline;
+    private Random random;
+    private Consumer<String> logCallback;
 
-    public TaskGenerator(Queue<Task> queue, Consumer<String> logOutput) {
-        this.queue = queue;
-        this.logOutput = logOutput;
+    public TaskGenerator(Consumer<String> logCallback) {
+        this.taskQueue = new LinkedList<>(); // Collections Requirement: LinkedList as a Queue
+        this.random = new Random();
+        this.logCallback = logCallback;
+        setupTimeline();
     }
 
-    public void start() {
-        timer = new Timer();
-        // Run every 4 seconds
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                createNewTask();
-            }
-        }, 2000, 4000); 
+    private void setupTimeline() {
+        // Triggers every 5 seconds to simulate an active loop
+        this.timeline = new Timeline(new KeyFrame(Duration.seconds(5), e -> {
+            generateTask();
+        }));
+        this.timeline.setCycleCount(Timeline.INDEFINITE);
     }
-    private void createNewTask() {
-        
-    }}
+
+    public void startSimulation() {
+        if (timeline != null) {
+            timeline.play();
+            logCallback.accept("SYSTEM: Simulation Engine Online. Heartbeat detected.");
+        }
+    }
+
+    private void generateTask() {
+        int choice = random.nextInt(3);
+        ColonyTask newTask;
+
+        // Implementation of Polymorphism and Inheritance
+        switch (choice) {
+            case 0 -> newTask = new LifeSupportTask("Oxygen Leak", 5, 10);
+            case 1 -> newTask = new EngineeringTask("Hull Breach", 8, 15);
+            default -> newTask = new ResearchTask("Data Corruption", 2, 5);
+        }
+
+        taskQueue.add(newTask); // Push to Queue
+        logCallback.accept("WARNING: New Task - " + newTask.getName());
+    }
+
+    public Queue<ColonyTask> getTaskQueue() {
+        return taskQueue;
+    }
+}
