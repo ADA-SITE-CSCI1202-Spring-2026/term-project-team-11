@@ -9,12 +9,11 @@ import java.util.Queue;
 import java.util.Random;
 
 public class TaskGenerator {
-    // Sofiya's Responsibility: The Task Queue
+  
     private Queue<Task> taskQueue = new LinkedList<>();
     private Random random = new Random();
 
     public void startSimulation() {
-        // Simulation Timeline: The station "Heartbeat"
         Timeline heartbeat = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
             generateMovlanTask();
         }));
@@ -26,7 +25,6 @@ public class TaskGenerator {
         Task newTask;
         int choice = random.nextInt(3);
 
-        // Using Movlan's specific classes
         if (choice == 0) {
             newTask = new FixTask("Air Duct Clog", 10);
         } else if (choice == 1) {
