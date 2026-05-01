@@ -1,0 +1,66 @@
+/* Main Styles for the Application */
+.root {
+    -fx-background-color: #0d1b2a;  /* Deep space blue */
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-border-radius: 10px;  /* Rounded corners for the window */
+}
+
+/* Planet Styling (Random scattered planets with glowing effect) */
+.planet {
+    -fx-fill: radial-gradient(center 50%, #1F2A44, #061522); /* Dark blue to black gradient */
+    -fx-effect: dropshadow(gaussian, #61A6D9, 15, 0.5, 1, 1); /* Glowing effect for planets */
+    -fx-opacity: 0.8;  /* Slight transparency for a cosmic feel */
+}
+
+/* Futuristic Label with glow effect */
+.futuristic-label {
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-size: 5vw; /* Responsive font size */
+    -fx-text-fill: #61A6D9;  /* Light blue color for futuristic effect */
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, #61A6D9, 15, 0.8, 0, 2);  /* Glowing text shadow */
+}
+
+/* Button Styling for a sleek futuristic design */
+.button {
+    -fx-background-color: #1F2A44; /* Dark blue button */
+    -fx-text-fill: #61A6D9;  /* Light blue text */
+    -fx-font-size: 16px;
+    -fx-border-color: #1F2A44; 
+    -fx-border-radius: 20px;  /* Rounded corners */
+    -fx-border-width: 3px;  /* Thicker border for emphasis */
+    -fx-padding: 15px 30px;  /* Larger padding for a modern, clickable feel */
+    -fx-effect: dropshadow(gaussian, #1F2A44, 10, 0.7, 1, 1);  /* Soft glow effect */
+    -fx-cursor: hand;  /* Cursor changes to hand on hover */
+}
+
+.button:hover {
+    -fx-background-color: #3E5671;  /* Lighter blue on hover */
+    -fx-text-fill: #FFFFFF;  /* White text on hover */
+    -fx-effect: dropshadow(gaussian, #3E5671, 10, 0.7, 1, 1);  /* Hover glow effect */
+}
+
+.button:pressed {
+    -fx-background-color: #2D3D58;  /* Darker blue when pressed */
+    -fx-text-fill: #61A6D9;  /* Keep light blue text on press */
+    -fx-effect: dropshadow(gaussian, #2D3D58, 10, 0.7, 1, 1);  /* Pressed glow effect */
+}
+
+/* Additional Styling for the Welcome Page */
+.welcome-page-label {
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-size: 30px;
+    -fx-text-fill: #61A6D9; /* Light blue text */
+    -fx-font-weight: bold;
+    -fx-alignment: center; /* Center the text in the page */
+    -fx-pref-width: 600px;
+    -fx-pref-height: 400px;
+}
+
+/* Optional Styling for Planets Animation */
+.planet {
+    -fx-effect: dropshadow(gaussian, #61A6D9, 15, 0.5, 1, 1); /* Glowing effect */
+    -fx-opacity: 0.8;  /* Slight transparency for cosmic effect */
+}
