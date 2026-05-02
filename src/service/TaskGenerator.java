@@ -10,34 +10,32 @@ import java.util.Random;
 
 public class TaskGenerator {
   
-    private Queue<Task> taskQueue = new LinkedList<>();
-    private Random random = new Random();
+    private final Queue<ColonyTask> taskQueue = new LinkedList<>();
+    private final Random random = new Random();
 
     public void startSimulation() {
         Timeline heartbeat = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
-            generateMovlanTask();
+            generateRandomTask();
         }));
         heartbeat.setCycleCount(Timeline.INDEFINITE);
         heartbeat.play();
     }
 
-    private void generateMovlanTask() {
-        Task newTask;
+    public void generateRandomTask() {
+        ColonyTask newTask; 
         int choice = random.nextInt(3);
 
-        if (choice == 0) {
-            newTask = new FixTask("Air Duct Clog", 10);
-        } else if (choice == 1) {
-            newTask = new EmergencyTask("Solar Flare", 20);
-        } else {
-            newTask = new ResearchTask("Soil Sample", 5);
-        }
+        newTask = switch (choice) {
+            case 0 -> new EngineeringTask();
+            case 1 -> new LifeSupportTask();
+            default -> new ResearchTask();
+        };
 
         taskQueue.add(newTask);
-        System.out.println("NEW EMERGENCY: " + newTask.getName() + " added to Queue.");
+        System.out.println("PROJECT LOG: New Task Added - " + newTask.getTaskName());
     }
 
-    public Queue<Task> getTaskQueue() {
+    public Queue<ColonyTask> getTaskQueue() {
         return taskQueue;
     }
 }
