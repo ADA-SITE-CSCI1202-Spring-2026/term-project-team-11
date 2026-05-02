@@ -2,13 +2,13 @@ package model;
 
 import java.util.Map;
 
-public abstract class Task {
+public abstract class ColonyTask {
     private String taskName;
     private String desc;
     private Map<ResourceType, Integer> resCost;
     private int creditRew;
 
-    public Task(String taskName, String desc, Map<ResourceType, Integer> resCost, int creditRew) {
+    public ColonyTask(String taskName, String desc, Map<ResourceType, Integer> resCost, int creditRew) {
         this.taskName = taskName;
         this.desc = desc;
         this.resCost = resCost;
