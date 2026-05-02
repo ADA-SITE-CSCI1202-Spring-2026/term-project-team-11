@@ -9,19 +9,14 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        
-        FXMLLoader loader = new FXMLLoader(
-                MainApp.class.getResource("/ui/DashboardView.fxml")
-        );
+        // Load the FXML file for the Dashboard view
+        FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/ui/DashboardView.fxml"));
 
-       
-        Scene scene = new Scene(loader.load(), 800, 600); 
-
-        
-        
+        // Create the scene and load the style
+        Scene scene = new Scene(loader.load(), 800, 600);
         scene.getStylesheets().add(getClass().getResource("/ui/style.css").toExternalForm());
 
-        
+        // Set up the stage and show it
         stage.setTitle("Ares Base");
         stage.setScene(scene);
         stage.show();
