@@ -24,9 +24,20 @@
     <Button fx:id="welcomeButton" text="Welcome" onAction="#handleWelcomeButton" 
             styleClass="button" StackPane.alignment="BOTTOM_CENTER" />
 
+    <!-- Start Tasks Button -->
+    <Button fx:id="startTasksButton" text="Start Tasks" onAction="#handleStartTasksButton"
+            styleClass="button" StackPane.alignment="BOTTOM_CENTER" layoutY="50" />
+
     <!-- Welcome Page Content -->
     <AnchorPane fx:id="welcomePage" style="-fx-background-color: transparent;">
         <Label text="Welcome to Team 11's Project!" 
+               style="-fx-font-size: 30px; -fx-text-fill: #61A6D9; -fx-alignment: center; -fx-pref-width: 600; -fx-pref-height: 400;" />
+    </AnchorPane>
+
+    <!-- Tasks Page Content (Hidden initially) -->
+    <AnchorPane fx:id="tasksPage" visible="false" style="-fx-background-color: transparent;">
+        <!-- Placeholder for tasks page -->
+        <Label text="Tasks Page"
                style="-fx-font-size: 30px; -fx-text-fill: #61A6D9; -fx-alignment: center; -fx-pref-width: 600; -fx-pref-height: 400;" />
     </AnchorPane>
 </StackPane>

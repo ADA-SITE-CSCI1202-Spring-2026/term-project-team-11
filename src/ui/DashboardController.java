@@ -15,7 +15,7 @@ public class DashboardController {
     private Label teamLabel;
 
     @FXML
-    private AnchorPane welcomePage;
+    private AnchorPane welcomePage, tasksPage;
 
     @FXML
     private Circle planet1, planet2, planet3, planet4;
@@ -23,7 +23,8 @@ public class DashboardController {
     @FXML
     public void initialize() {
         teamLabel.setText("Team 11");
-        welcomePage.setVisible(false);
+        welcomePage.setVisible(true);
+        tasksPage.setVisible(false);  // Ensure tasksPage is hidden initially
 
         scatterPlanets();  // Scatter the planets when the app starts
         animatePlanets();  // Animate planets to create more dynamics
@@ -39,6 +40,14 @@ public class DashboardController {
         fade.setToValue(welcomePage.isVisible() ? 0 : 1);
         fade.setOnFinished(e -> welcomePage.setVisible(!welcomePage.isVisible()));
         fade.play();
+    }
+
+    // New method to handle transition to the tasks page
+    @FXML
+    public void handleStartTasksButton() {
+        // Transition from the welcomePage to tasksPage
+        welcomePage.setVisible(false);
+        tasksPage.setVisible(true);
     }
 
     private void scatterPlanets() {
