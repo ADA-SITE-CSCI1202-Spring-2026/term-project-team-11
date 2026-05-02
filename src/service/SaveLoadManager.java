@@ -9,6 +9,11 @@ public class SaveLoadManager {
     private static final String FILE_NAME = "init.txt";
 
     public void saveProgress(BaseState state) {
+        if (state == null) {
+            System.err.println("SAVE ERROR: BaseState is null.");
+            return;
+        }
+
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_NAME))) {
             writer.println("Credits:" + state.getCredits());
             writer.println("Oxygen:" + state.getResource(ResourceType.OXYGEN));
@@ -22,7 +27,7 @@ public class SaveLoadManager {
         }
     }
 
-    public void loadProgress() {
+    public void loadProgress(BaseState state) {
         File file = new File(FILE_NAME);
         if (!file.exists()) {
             System.out.println("LOG: No init.txt found. Using default values.");
@@ -35,12 +40,14 @@ public class SaveLoadManager {
                 if (line.contains(":")) {
                     String[] parts = line.split(":");
                     String label = parts[0];
-                    String value = parts[1];
+                    // Clean up potential spaces
+                    String value = parts[1].trim(); 
                     System.out.println("Restoring " + label + " to " + value);
+        
                 }
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("LOAD ERROR: Save file disappeared during reading.");
         }
     }
 }

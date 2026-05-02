@@ -2,23 +2,14 @@ package model;
 
 import java.util.Map;
 
-public class ResearchTask extends Task {
+public class ResearchTask extends ColonyTask {
     public ResearchTask() {
-        super(
-            "Solar Tech", 
-            "Optimize energy output", 
-            Map.of(ResourceType.RATIONS, 10, ResourceType.POWER, 15), 
-            1000
-        );
+        super("Soil Analysis", "Testing Martian regolith", 
+              Map.of(ResourceType.POWER, 5, ResourceType.RATIONS, 2), 500);
     }
 
     @Override
     public void execute() {
-        System.out.println("ResearchTask: " + getTaskName() + " complete.");
-    }
-
-    @Override
-    public String toString() {
-        return "[RES] " + super.toString();
+        System.out.println("Research data uploaded to Earth.");
     }
 }
