@@ -1,22 +1,22 @@
 package service;
 
 import model.BaseState;
+import model.ColonyTask;
+import model.LifeSupportTask;
 import model.ResearchTask;
-import model.Task;
 
-public class MedicalWard implements IBaseModule {
+public class MedicalWard implements IProcessor {
 
-    // handles research tasks
     @Override
-    public boolean canProcess(Task task) {
-        return task instanceof ResearchTask;
+    public boolean canProcess(ColonyTask task) {
+        return task instanceof LifeSupportTask || task instanceof ResearchTask;
     }
 
     @Override
-    public void processTask(Task task, BaseState state) {
+    public void handleTask(ColonyTask task, BaseState state) {
         boolean success = state.executeTask(task);
         if (success) {
-            System.out.println("MedicalWard: completed task - " + task.getTaskName());
+            System.out.println("MedicalWard: completed - " + task.getTaskName());
         } else {
             System.out.println("MedicalWard: not enough resources for - " + task.getTaskName());
         }

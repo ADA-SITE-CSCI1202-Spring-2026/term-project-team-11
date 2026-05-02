@@ -3,6 +3,7 @@ package model;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class BaseState {
 
     private HashMap<ResourceType, Integer> resources;
@@ -66,7 +67,7 @@ public class BaseState {
     }
 
     // main method for executing a task - checks resources first
-    public boolean executeTask(Task task) {
+    public boolean executeTask(ColonyTask task) {
         Map<ResourceType, Integer> cost = task.getResourceCosts();
         if (!hasEnough(cost)) {
             return false;
