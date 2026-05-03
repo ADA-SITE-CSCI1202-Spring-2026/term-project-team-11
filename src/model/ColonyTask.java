@@ -32,7 +32,7 @@ public abstract class ColonyTask {
     }
 
     public abstract void execute();
-
+    public abstract String getTaskCategory();
     @Override
     public String toString() {
         return String.format("[%s] %s | Costs: %s | Reward: %d Credits", 
