@@ -2,24 +2,27 @@ package app;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
-
     @Override
-    public void start(Stage stage) throws Exception {
-        // Load the FXML file for the Dashboard view
-        FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/ui/DashboardView.fxml"));
+    public void start(Stage primaryStage) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/ui/DashboardView.fxml"));
+            
+            // Standard resolution, responsive layout handles scaling
+            Scene scene = new Scene(root, 1024, 768);
+            scene.getStylesheets().add(getClass().getResource("/ui/style.css").toExternalForm());
 
-        // Create the scene and load the style
-        Scene scene = new Scene(loader.load(), 800, 600);
-        scene.getStylesheets().add(getClass().getResource("/ui/style.css").toExternalForm());
-
-        // Set up the stage and show it
-        stage.setTitle("Ares Base");
-        stage.setScene(scene);
-        stage.show();
+            primaryStage.setTitle("Team 11: Ares Base Survival");
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (Exception e) {
+            System.err.println("FATAL ERROR: FXML Load Failed.");
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

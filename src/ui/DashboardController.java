@@ -1,173 +1,214 @@
 package ui;
 
-import javafx.animation.FadeTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.image.Image;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import model.BaseState;
-import model.ColonyTask;
-import service.TaskGenerator;
-import javafx.scene.text.Text;
-import java.util.Random;  // <-- Add this import
+import java.io.File;
+import java.util.Queue;
+import java.util.List;
+import model.*;
+import service.*;
 
 public class DashboardController {
+    
+    // UI LAYERS
+    @FXML private VBox introLayer;
+    @FXML private VBox dashboardLayer;
+    
+    // ANIMATION ELEMENTS
+    @FXML private Pane planetContainer;
+    @FXML private Circle planet1; // Mars
+    @FXML private Circle planet2; // Earth
+    private RotateTransition orbitAnimation;
+    private Timeline uiPoller; 
+    
+    // DASHBOARD ELEMENTS
+    @FXML private ListView<ColonyTask> taskListView;
+    @FXML private Label lblOxygen, lblCredits, lblParts, lblRations, lblPower;
+    @FXML private ProgressBar pbPower; 
+    @FXML private TextArea logTextArea;
+    @FXML private ComboBox<ResourceType> comboRestock;
 
-    @FXML
-    private Label teamLabel, oxygenLabel, sparePartsLabel, rationsLabel, powerLabel, creditsLabel;
+    // SYSTEM STATE
+    private Queue<ColonyTask> queue; 
+    private BaseState state = new BaseState();
+    private TaskGenerator taskGenerator = new TaskGenerator(); 
+    private SaveLoadManager saveManager = new SaveLoadManager();
+    private List<IProcessor> modules = List.of(new EngineeringBay(), new MedicalWard());
+    
+    // TRACKING FLAGS
+    private boolean isGameOver = false;
+    private int lastQueueSize = 0; // Tracks background queue changes
 
-    @FXML
-    private AnchorPane welcomePage, tasksPage;
-
-    @FXML
-    private Circle planet1, planet2, planet3, planet4;
-
-    @FXML
-    private Button executeNextTaskButton, synthesizeButton;
-
-    @FXML
-    private VBox taskListVBox;  // The VBox to hold the task list
-
-    private BaseState baseState;
-    private TaskGenerator taskGenerator;
-
-    @FXML
     public void initialize() {
-        teamLabel.setText("Team 11");
-        welcomePage.setVisible(true);
-        tasksPage.setVisible(false);  // Ensure tasksPage is hidden initially
+        try {
+            // 1. SETUP DATA & GENERATOR FIRST
+            comboRestock.getItems().setAll(ResourceType.values());
+            taskGenerator.startSimulation(); 
+            queue = taskGenerator.getTaskQueue(); 
+            
+            // 2. ATTEMPT TO RESTORE SAVED STATE & QUEUE
+            File saveFile = new File("init.txt"); 
+            if (saveFile.exists()) {
+                saveManager.loadProgress(state, queue); 
+                lastQueueSize = queue.size(); // Sync the tracker with loaded data
+            }
 
-        baseState = new BaseState();
-        taskGenerator = new TaskGenerator();
-        taskGenerator.startSimulation(); // Start task generation
+            // 3. SAFE IMAGE LOADING
+            try {
+                planet1.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/ui/mars.png"))));
+            } catch (Exception e) {
+                planet1.setFill(Color.ORANGERED); 
+            }
+            
+            try {
+                planet2.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/ui/earth.png"))));
+            } catch (Exception e) {
+                planet2.setFill(Color.DEEPSKYBLUE); 
+            }
 
-        scatterPlanets();  // Scatter the planets when the app starts
-        animatePlanets();  // Animate planets to create more dynamics
-
-        // Add fade-in effect for the welcome page
-        welcomePage.setOpacity(0);  // Start with 0 opacity (invisible)
-
-        updateVitals(); // Initial update of the resource labels
+            // 4. UI POLLER
+            uiPoller = new Timeline(new KeyFrame(Duration.seconds(1), e -> refreshUI()));
+            uiPoller.setCycleCount(Animation.INDEFINITE);
+            uiPoller.play();
+            
+            refreshUI();
+            
+            // 5. SETUP ORBITAL ANIMATION
+            orbitAnimation = new RotateTransition(Duration.seconds(8), planetContainer);
+            orbitAnimation.setByAngle(360);
+            orbitAnimation.setCycleCount(Animation.INDEFINITE);
+            orbitAnimation.setInterpolator(Interpolator.LINEAR);
+            orbitAnimation.play();
+            
+        } catch (Exception e) {
+            System.err.println("Controller Init Error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
-    public void handleWelcomeButton() {
-        // Toggle the visibility of the welcome page with fade effect
-        FadeTransition fade = new FadeTransition(Duration.seconds(1), welcomePage);
-        fade.setToValue(welcomePage.isVisible() ? 0 : 1);
-        fade.setOnFinished(e -> welcomePage.setVisible(!welcomePage.isVisible()));
-        fade.play();
+    private void handleStart() {
+        orbitAnimation.stop();
+        
+        TranslateTransition tt1 = new TranslateTransition(Duration.seconds(1.2), planet1);
+        tt1.setToX(-800); 
+        
+        TranslateTransition tt2 = new TranslateTransition(Duration.seconds(1.2), planet2);
+        tt2.setToX(800);  
+        
+        tt1.play();
+        tt2.play();
+
+        FadeTransition fadeOutIntro = new FadeTransition(Duration.seconds(1), introLayer);
+        fadeOutIntro.setToValue(0.0);
+        fadeOutIntro.setOnFinished(e -> {
+            introLayer.setVisible(false);
+            dashboardLayer.setVisible(true);
+            
+            FadeTransition fadeInDash = new FadeTransition(Duration.seconds(1.5), dashboardLayer);
+            fadeInDash.setFromValue(0.0);
+            fadeInDash.setToValue(1.0);
+            fadeInDash.play();
+            
+            logTextArea.appendText("SYSTEM REBOOT: Ares Base Online...\n");
+            if (new File("init.txt").exists()) {
+                logTextArea.appendText("SYSTEM: Previous state and queue restored.\n");
+            }
+        });
+        
+        fadeOutIntro.play();
     }
 
-    // New method to handle transition to the tasks page
     @FXML
-    public void handleStartTasksButton() {
-        // Transition from the welcomePage to tasksPage
-        welcomePage.setVisible(false);
-        tasksPage.setVisible(true);
+    private void handleExecute() {
+        if (isGameOver) return; 
 
-        // Show the tasks when transitioning to the task page
-        showTasks();
+        ColonyTask task = queue.peek(); 
+        
+        if (task == null) {
+            logTextArea.appendText("COMMAND: No pending crises.\n");
+            return;
+        }
+
+        if (state.executeTask(task)) {
+            queue.poll(); 
+            logTextArea.appendText("SUCCESS: " + task.getTaskName() + " resolved.\n");
+            saveManager.saveProgress(state, queue); 
+        } else {
+            logTextArea.appendText("FAILURE: Missing resources for " + task.getTaskName() + "\n");
+        }
+        refreshUI();
     }
 
     @FXML
-    public void handleExecuteNextTaskButton() {
-        // Handle execution of the next task
-        if (!taskGenerator.getTaskQueue().isEmpty()) {
-            ColonyTask task = taskGenerator.getTaskQueue().poll();
-            boolean success = baseState.executeTask(task);
+    private void handleSynthesize() {
+        if (isGameOver) return; 
 
-            if (success) {
-                updateVitals(); // Update the resource labels after task execution
-                showTasks();    // Update the task list UI
-                System.out.println("Task completed: " + task.getTaskName());
+        ResourceType selected = comboRestock.getValue();
+        if (selected != null) {
+            if (state.buyResource(selected, 5, 50)) {
+                logTextArea.appendText("REPLICATOR: Produced 5 " + selected + "\n");
+                saveManager.saveProgress(state, queue); 
             } else {
-                System.out.println("Not enough resources to complete task: " + task.getTaskName());
+                logTextArea.appendText("ERROR: Insufficient Credits!\n");
+            }
+            refreshUI();
+        }
+    }
+
+    private void refreshUI() {
+        if (isGameOver) return; 
+
+        if (queue != null) {
+            taskListView.getItems().setAll(queue); 
+            
+            // Auto-Save if TaskGenerator added new crises in the background
+            if (queue.size() > lastQueueSize) {
+                saveManager.saveProgress(state, queue);
+            }
+            lastQueueSize = queue.size(); 
+        }
+        
+        lblOxygen.setText("Oxygen: " + state.getResource(ResourceType.OXYGEN) + "%");
+        lblCredits.setText("Credits: " + state.getCredits() + " CR");
+        lblParts.setText("Parts: " + state.getResource(ResourceType.SPARE_PARTS));
+        lblRations.setText("Rations: " + state.getResource(ResourceType.RATIONS));
+        
+        int currentPower = state.getResource(ResourceType.POWER);
+        lblPower.setText("Power: " + currentPower + " Units");
+        pbPower.setProgress(currentPower / 100.0); 
+
+        checkGameOverState();
+    }
+
+    private void checkGameOverState() {
+        ColonyTask topTask = queue.peek();
+        
+        if (topTask != null) {
+            boolean cannotAffordTask = !state.hasEnough(topTask.getResourceCosts());
+            
+            if (cannotAffordTask && state.getCredits() < 50) {
+                isGameOver = true;
+                if (uiPoller != null) uiPoller.stop();
+                
+                logTextArea.appendText("\n====================================\n");
+                logTextArea.appendText("!!! FATAL ERROR !!!\n");
+                logTextArea.appendText("INSUFFICIENT RESOURCES TO RESOLVE CRISIS.\n");
+                logTextArea.appendText("REPLICATOR FUNDS DEPLETED.\n");
+                logTextArea.appendText("ARES BASE STATION LOST.\n");
+                logTextArea.appendText("--- GAME OVER ---\n");
+                logTextArea.appendText("====================================\n");
+                
+                File saveFile = new File("init.txt");
+                if (saveFile.exists()) saveFile.delete();
             }
         }
-    }
-
-    @FXML
-    public void handleSynthesizeButton() {
-        // Logic to synthesize resources
-        // Example: synthesize spare parts
-        boolean success = baseState.buyResource(model.ResourceType.SPARE_PARTS, 10, 100);
-        if (success) {
-            updateVitals(); // Update after resource synthesis
-            System.out.println("Synthesize Spare Parts: Success");
-        } else {
-            System.out.println("Not enough credits to synthesize Spare Parts");
-        }
-    }
-
-    private void updateVitals() {
-        // Update the vital statistics labels
-        oxygenLabel.setText("Oxygen: " + baseState.getResource(model.ResourceType.OXYGEN));
-        sparePartsLabel.setText("Spare Parts: " + baseState.getResource(model.ResourceType.SPARE_PARTS));
-        rationsLabel.setText("Rations: " + baseState.getResource(model.ResourceType.RATIONS));
-        powerLabel.setText("Power: " + baseState.getResource(model.ResourceType.POWER));
-        creditsLabel.setText("Credits: " + baseState.getCredits());
-    }
-
-    private void showTasks() {
-        // Clear existing tasks in the VBox
-        taskListVBox.getChildren().clear();
-
-        // Add tasks from the queue
-        for (ColonyTask task : taskGenerator.getTaskQueue()) {
-            Text taskText = new Text(task.getTaskName());
-            taskText.setStyle("-fx-font-size: 18px; -fx-text-fill: #61A6D9;");
-            taskListVBox.getChildren().add(taskText);
-        }
-    }
-
-    private void scatterPlanets() {
-        Random random = new Random();  // Initialize Random here
-        planet1.setLayoutX(random.nextInt(500));
-        planet1.setLayoutY(random.nextInt(300));
-
-        planet2.setLayoutX(random.nextInt(500));
-        planet2.setLayoutY(random.nextInt(300));
-
-        planet3.setLayoutX(random.nextInt(500));
-        planet3.setLayoutY(random.nextInt(300));
-
-        planet4.setLayoutX(random.nextInt(500));
-        planet4.setLayoutY(random.nextInt(300));
-    }
-
-    private void animatePlanets() {
-        // Animate each planet to move across the screen
-        TranslateTransition translate1 = new TranslateTransition(Duration.seconds(5), planet1);
-        translate1.setByX(150);
-        translate1.setByY(100);
-        translate1.setCycleCount(TranslateTransition.INDEFINITE);
-        translate1.setAutoReverse(true);
-        translate1.play();
-
-        TranslateTransition translate2 = new TranslateTransition(Duration.seconds(7), planet2);
-        translate2.setByX(-200);
-        translate2.setByY(120);
-        translate2.setCycleCount(TranslateTransition.INDEFINITE);
-        translate2.setAutoReverse(true);
-        translate2.play();
-
-        TranslateTransition translate3 = new TranslateTransition(Duration.seconds(6), planet3);
-        translate3.setByX(100);
-        translate3.setByY(-150);
-        translate3.setCycleCount(TranslateTransition.INDEFINITE);
-        translate3.setAutoReverse(true);
-        translate3.play();
-
-        TranslateTransition translate4 = new TranslateTransition(Duration.seconds(8), planet4);
-        translate4.setByX(-120);
-        translate4.setByY(-100);
-        translate4.setCycleCount(TranslateTransition.INDEFINITE);
-        translate4.setAutoReverse(true);
-        translate4.play();
     }
 }
