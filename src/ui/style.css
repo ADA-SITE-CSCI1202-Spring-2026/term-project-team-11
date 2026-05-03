@@ -1,66 +1,106 @@
-/* Main Styles for the Application */
-.root {
-    -fx-background-color: #0d1b2a;  /* Deep space blue */
+.main-root {
+    -fx-background-image: url('space.png');
     -fx-background-size: cover;
-    -fx-background-position: center;
-    -fx-background-repeat: no-repeat;
-    -fx-border-radius: 10px;  /* Rounded corners for the window */
+    -fx-background-color: #0b0c10;
+    -fx-font-family: "Courier New", monospace;
 }
 
-/* Planet Styling (Random scattered planets with glowing effect) */
-.planet {
-    -fx-fill: radial-gradient(center 50%, #1F2A44, #061522); /* Dark blue to black gradient */
-    -fx-effect: dropshadow(gaussian, #61A6D9, 15, 0.5, 1, 1); /* Glowing effect for planets */
-    -fx-opacity: 0.8;  /* Slight transparency for a cosmic feel */
+.intro-overlay {
+    -fx-background-color: rgba(11, 12, 16, 0.85);
 }
 
-/* Futuristic Label with glow effect */
-.futuristic-label {
-    -fx-font-family: "Roboto", sans-serif;
-    -fx-font-size: 5vw; /* Responsive font size */
-    -fx-text-fill: #61A6D9;  /* Light blue color for futuristic effect */
+.header-glitch {
+    -fx-font-size: 36px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, #61A6D9, 15, 0.8, 0, 2);  /* Glowing text shadow */
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(two-pass-box, #ff4500, 5, 0.5, 3, 0);
 }
 
-/* Button Styling for a sleek futuristic design */
-.button {
-    -fx-background-color: #1F2A44; /* Dark blue button */
-    -fx-text-fill: #61A6D9;  /* Light blue text */
+.zone-title {
+    -fx-font-size: 18px;
+    -fx-text-fill: #66fcf1;
+    -fx-font-weight: bold;
+}
+
+.vitals-box {
+    -fx-border-color: #45a29e;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-padding: 15px;
+    -fx-background-color: rgba(31, 40, 51, 0.8);
+}
+
+.vital-label {
     -fx-font-size: 16px;
-    -fx-border-color: #1F2A44; 
-    -fx-border-radius: 20px;  /* Rounded corners */
-    -fx-border-width: 3px;  /* Thicker border for emphasis */
-    -fx-padding: 15px 30px;  /* Larger padding for a modern, clickable feel */
-    -fx-effect: dropshadow(gaussian, #1F2A44, 10, 0.7, 1, 1);  /* Soft glow effect */
-    -fx-cursor: hand;  /* Cursor changes to hand on hover */
+    -fx-text-fill: #c5c6c7;
 }
 
-.button:hover {
-    -fx-background-color: #3E5671;  /* Lighter blue on hover */
-    -fx-text-fill: #FFFFFF;  /* White text on hover */
-    -fx-effect: dropshadow(gaussian, #3E5671, 10, 0.7, 1, 1);  /* Hover glow effect */
+.terminal-list {
+    -fx-control-inner-background: #0b0c10;
+    -fx-background-color: #45a29e;
+    -fx-padding: 2px;
+}
+.terminal-list .list-cell {
+    -fx-text-fill: #000000;
+    -fx-background-color: transparent;
+}
+.terminal-list .list-cell:selected {
+    -fx-background-color: #1f2833;
 }
 
-.button:pressed {
-    -fx-background-color: #2D3D58;  /* Darker blue when pressed */
-    -fx-text-fill: #61A6D9;  /* Keep light blue text on press */
-    -fx-effect: dropshadow(gaussian, #2D3D58, 10, 0.7, 1, 1);  /* Pressed glow effect */
+.terminal-log {
+    -fx-control-inner-background: #000000;
+    -fx-text-fill: #00ff00;
+    -fx-border-color: #45a29e;
+    -fx-font-size: 14px;
 }
 
-/* Additional Styling for the Welcome Page */
-.welcome-page-label {
-    -fx-font-family: "Roboto", sans-serif;
-    -fx-font-size: 30px;
-    -fx-text-fill: #61A6D9; /* Light blue text */
-    -fx-font-weight: bold;
-    -fx-alignment: center; /* Center the text in the page */
-    -fx-pref-width: 600px;
-    -fx-pref-height: 400px;
+.start-btn {
+    -fx-font-size: 24px;
+    -fx-background-color: transparent;
+    -fx-border-color: #66fcf1;
+    -fx-text-fill: #66fcf1;
+    -fx-border-width: 3px;
+    -fx-padding: 10px 30px;
+    -fx-cursor: hand;
+}
+.start-btn:hover {
+    -fx-background-color: #66fcf1;
+    -fx-text-fill: #0b0c10;
 }
 
-/* Optional Styling for Planets Animation */
-.planet {
-    -fx-effect: dropshadow(gaussian, #61A6D9, 15, 0.5, 1, 1); /* Glowing effect */
-    -fx-opacity: 0.8;  /* Slight transparency for cosmic effect */
+.action-btn {
+    -fx-background-color: #1f2833;
+    -fx-text-fill: #66fcf1;
+    -fx-border-color: #45a29e;
+    -fx-font-size: 14px;
+    -fx-padding: 8px;
+    -fx-cursor: hand;
+}
+.action-btn:hover {
+    -fx-background-color: #45a29e;
+    -fx-text-fill: #0b0c10;
+}
+
+/* Planet Glow Styles */
+.planet-mars {
+    -fx-effect: dropshadow(gaussian, rgba(255, 69, 0, 0.6), 20, 0.5, 0, 0);
+}
+.planet-earth {
+    -fx-effect: dropshadow(gaussian, rgba(0, 191, 255, 0.6), 15, 0.4, 0, 0);
+}
+
+/* Power Bar Styles */
+.power-bar {
+    -fx-accent: #f7e017;
+}
+.power-bar .track {
+    -fx-background-color: #1f2833;
+    -fx-background-insets: 0;
+    -fx-background-radius: 2px;
+}
+.power-bar .bar {
+    -fx-background-insets: 0;
+    -fx-background-radius: 2px;
+    -fx-effect: dropshadow(gaussian, #f7e017, 10, 0.5, 0, 0);
 }
