@@ -26,6 +26,14 @@ public class BaseState {
         return credits;
     }
 
+    public void setCredits(int amount) {
+        this.credits = amount;
+    }
+
+    public void setResource(ResourceType type, int amount) {
+        resources.put(type, amount);
+    }
+
     // checks if we have enough resources for the task
     public boolean hasEnough(Map<ResourceType, Integer> required) {
         for (Map.Entry<ResourceType, Integer> entry : required.entrySet()) {
