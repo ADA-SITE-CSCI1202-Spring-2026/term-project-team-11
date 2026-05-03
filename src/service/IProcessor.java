@@ -7,5 +7,5 @@ public interface IProcessor {
     
     boolean canProcess(ColonyTask task);
 
-    void handleTask(ColonyTask task, BaseState state);
+    boolean process(ColonyTask task, BaseState state);
 }

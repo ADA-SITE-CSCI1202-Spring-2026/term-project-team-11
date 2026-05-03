@@ -7,7 +7,9 @@ public class EngineeringTask extends ColonyTask {
         super("Solar Array Repair", "Realigning panels", 
               Map.of(ResourceType.SPARE_PARTS, 15, ResourceType.POWER, 2), 150);
     }
-
+    @Override
+    public String getTaskCategory() { return "ENGINEERING"; }
+    
     @Override
     public void execute() {
         System.out.println("Engineering repair complete.");
