@@ -81,8 +81,19 @@ javac --module-path %PATH_TO_FX% --add-modules javafx.controls,javafx.fxml -d bi
 find src -name "*.java" > sources.txt
 javac --module-path $PATH_TO_FX --add-modules javafx.controls,javafx.fxml -d bin @sources.txt
 ```
+### 3. Sync Resources (Crucial Step)
+JavaFX requires FXML and CSS files to be present in the bin folder to load correctly.
+```
+:: Create the UI directory in bin
+mkdir bin\ui 2>nul
 
-### 3. Run the Application
+:: Copy all UI assets (FXML, CSS, Images)
+xcopy /s /y src\ui\* bin\ui\
+
+:: Copy the initialization data
+copy /y init.txt bin\
+```
+### 4. Run the Application
 
 Once compiled, run `MainApp.java`, which acts as the entry point for the application.
 
