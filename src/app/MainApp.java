@@ -12,7 +12,6 @@ public class MainApp extends Application {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/ui/DashboardView.fxml"));
             
-            // Standard resolution, responsive layout handles scaling
             Scene scene = new Scene(root, 1024, 768);
             scene.getStylesheets().add(getClass().getResource("/ui/style.css").toExternalForm());
 

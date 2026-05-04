@@ -17,50 +17,42 @@ import service.*;
 
 public class DashboardController {
     
-    // UI LAYERS
     @FXML private VBox introLayer;
     @FXML private VBox dashboardLayer;
     
-    // ANIMATION ELEMENTS
     @FXML private Pane planetContainer;
-    @FXML private Circle planet1; // Mars
-    @FXML private Circle planet2; // Earth
+    @FXML private Circle planet1; 
+    @FXML private Circle planet2; 
     private RotateTransition orbitAnimation;
     private Timeline uiPoller; 
     
-    // DASHBOARD ELEMENTS
     @FXML private ListView<ColonyTask> taskListView;
     @FXML private Label lblOxygen, lblCredits, lblParts, lblRations, lblPower;
     @FXML private ProgressBar pbPower; 
     @FXML private TextArea logTextArea;
     @FXML private ComboBox<ResourceType> comboRestock;
 
-    // SYSTEM STATE
     private Queue<ColonyTask> queue; 
     private BaseState state = new BaseState();
     private TaskGenerator taskGenerator = new TaskGenerator(); 
     private SaveLoadManager saveManager = new SaveLoadManager();
-    private List<IProcessor> modules = List.of(new EngineeringBay(), new MedicalWard());
     
-    // TRACKING FLAGS
+    private List<IProcessor> modules = List.of(new EngineeringBay(), new MedicalWard());
     private boolean isGameOver = false;
-    private int lastQueueSize = 0; // Tracks background queue changes
+    private int lastQueueSize = 0; 
 
     public void initialize() {
         try {
-            // 1. SETUP DATA & GENERATOR FIRST
             comboRestock.getItems().setAll(ResourceType.values());
             taskGenerator.startSimulation(); 
             queue = taskGenerator.getTaskQueue(); 
             
-            // 2. ATTEMPT TO RESTORE SAVED STATE & QUEUE
             File saveFile = new File("init.txt"); 
             if (saveFile.exists()) {
                 saveManager.loadProgress(state, queue); 
-                lastQueueSize = queue.size(); // Sync the tracker with loaded data
+                lastQueueSize = queue.size(); 
             }
 
-            // 3. SAFE IMAGE LOADING
             try {
                 planet1.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/ui/mars.png"))));
             } catch (Exception e) {
@@ -73,14 +65,12 @@ public class DashboardController {
                 planet2.setFill(Color.DEEPSKYBLUE); 
             }
 
-            // 4. UI POLLER
             uiPoller = new Timeline(new KeyFrame(Duration.seconds(1), e -> refreshUI()));
             uiPoller.setCycleCount(Animation.INDEFINITE);
             uiPoller.play();
             
             refreshUI();
             
-            // 5. SETUP ORBITAL ANIMATION
             orbitAnimation = new RotateTransition(Duration.seconds(8), planetContainer);
             orbitAnimation.setByAngle(360);
             orbitAnimation.setCycleCount(Animation.INDEFINITE);
@@ -131,19 +121,33 @@ public class DashboardController {
         if (isGameOver) return; 
 
         ColonyTask task = queue.peek(); 
-        
         if (task == null) {
             logTextArea.appendText("COMMAND: No pending crises.\n");
             return;
         }
 
-        if (state.executeTask(task)) {
-            queue.poll(); 
-            logTextArea.appendText("SUCCESS: " + task.getTaskName() + " resolved.\n");
-            saveManager.saveProgress(state, queue); 
-        } else {
+        boolean foundProcessor = false;
+        boolean success = false;
+
+        for (IProcessor module : modules) {
+            if (module.canProcess(task)) {
+                foundProcessor = true;
+                if (module.process(task, state)) {
+                    success = true;
+                    queue.poll(); 
+                    logTextArea.appendText("SUCCESS: " + task.getTaskName() + " resolved by " + module.getClass().getSimpleName() + "\n");
+                    saveManager.saveProgress(state, queue); 
+                }
+                break; 
+            }
+        }
+
+        if (!foundProcessor) {
+            logTextArea.appendText("ERROR: No compatible module found for " + task.getTaskName() + "!\n");
+        } else if (!success) {
             logTextArea.appendText("FAILURE: Missing resources for " + task.getTaskName() + "\n");
         }
+        
         refreshUI();
     }
 
@@ -169,7 +173,6 @@ public class DashboardController {
         if (queue != null) {
             taskListView.getItems().setAll(queue); 
             
-            // Auto-Save if TaskGenerator added new crises in the background
             if (queue.size() > lastQueueSize) {
                 saveManager.saveProgress(state, queue);
             }
