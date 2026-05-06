@@ -37,7 +37,7 @@ The project is organized into the following directory structure:
 
 To get a local copy of this repository, you can use the following command:
 ```
-git clone https://github.com/[your-username]/term-project-team-11.git
+git clone https://github.com/ADA-SITE-CSCI1202-Spring-2026/term-project-team-11.git
 ```
 
 
